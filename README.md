@@ -7,26 +7,43 @@ This is an educational starter project inspired by the [awesome-fly](https://git
 > **Important**: This is **not** a full biological brain simulation.  
 > We use a small, fixed circuit structure inspired by real MaleCNS connectivity patterns, then train only a lightweight readout (or a few gains) for simple tasks.
 
-## What you can do
+## Available Tasks
 
-- Train a small neural readout on top of a fixed fly-inspired circuit
-- Run simple tasks (CartPole-style balancing, binary classification, simple control)
-- Visualize activity of the mapped neurons
-- Keep the connectome structure frozen and only train the readout (common pattern in the community)
+### 1. CartPole-lite (classic control)
+Train the circuit to balance a pole.
+
+### 2. Word Association (NEW) — Treat & Punishment
+Train the circuit to associate simple words with positive or negative outcomes, similar in spirit to how apes were trained with rewards and corrections.
+
+| Word     | True meaning | Desired action |
+|----------|--------------|----------------|
+| banana   | good         | approach       |
+| apple    | good         | approach       |
+| safe     | good         | approach       |
+| good     | good         | approach       |
+| water    | good         | approach       |
+| danger   | bad          | avoid          |
+| bad      | bad          | avoid          |
+| fire     | bad          | avoid          |
+
+- Correct association → **+1 (treat)**
+- Wrong association → **-1 (punishment)**
 
 ## Project Structure
 
 ```
 flybrain-simple-tasks/
-├── circuit/                 # Fixed fly-inspired circuit definition
-│   └── male_cns_subset.py
-├── tasks/                   # Simple environments / tasks
+├── circuit/
+│   └── male_cns_subset.py      # Fixed fly-inspired circuit
+├── tasks/
 │   ├── cartpole_lite.py
-│   └── classification.py
-├── train/                   # Training scripts
-│   ├── train_readout.py
-│   └── evaluate.py
-├── visualize/               # Simple activity plots
+│   └── word_association.py     # NEW – treat / punishment task
+├── train/
+│   ├── train_readout.py        # CartPole training
+│   ├── train_words.py          # NEW – word learning
+│   ├── evaluate.py
+│   └── evaluate_words.py       # NEW
+├── visualize/
 │   └── plot_activity.py
 ├── requirements.txt
 └── README.md
@@ -41,34 +58,45 @@ cd flybrain-simple-tasks
 python -m venv venv
 source venv/bin/activate          # Windows: venv\Scripts\activate
 pip install -r requirements.txt
+```
 
-# Train a simple readout on the CartPole-lite task
-python -m train.train_readout --task cartpole --episodes 300
+### Train word association (treat / punishment)
 
-# Evaluate
-python -m train.evaluate --task cartpole --checkpoint checkpoints/best.pt
+```bash
+python -m train.train_words --episodes 2000
+```
+
+### Evaluate word learning
+
+```bash
+python -m train.evaluate_words
+```
+
+### Train CartPole (previous task)
+
+```bash
+python -m train.train_readout --episodes 300
+python -m train.evaluate --checkpoint checkpoints/best.pt
 ```
 
 ## Design Philosophy
 
-Following patterns used in many awesome-fly projects:
-
 | Part                        | Status                          |
 |----------------------------|---------------------------------|
 | Circuit structure          | Fixed (inspired by MaleCNS)     |
-| Neuron dynamics            | Simple LIF / leaky units        |
-| Sensory mapping            | Hand-designed / learnable gains |
-| Motor / decision readout   | **Trained**                     |
+| Neuron dynamics            | Simple leaky units              |
+| Sensory mapping            | Learnable input gains           |
+| Decision readout           | **Trained**                     |
 | Full synaptic plasticity   | Not included (by design)        |
 
-This keeps experiments honest and computationally light while still being grounded in real connectome ideas.
+This matches the honest pattern used in many community fly-connectome projects: keep the circuit structure fixed and only train a lightweight readout.
 
 ## Credits & Inspiration
 
 - [awesome-fly](https://github.com/cobanov/awesome-fly) by Mert Cobanov
 - [fly-connectome-template](https://github.com/cobanov/fly-connectome-template)
 - MaleCNS dataset (Janelia / FlyEM and collaborators)
-- Community projects such as Fly Dino, fly-cartpole, Flyhard, etc.
+- Operant conditioning experiments with great apes (for the high-level training idea)
 
 ## License
 
