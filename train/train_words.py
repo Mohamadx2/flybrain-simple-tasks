@@ -87,7 +87,7 @@ def train(
                 print(f"  → New best model saved (accuracy {accuracy*100:.1f}%)")
 
     print("\n" + "=" * 60)
-    print(f"Training finished. Best recent accuracy: {best quant_accuracy*100:.1f}%")
+    print(f"Training finished. Best recent accuracy: {best_accuracy*100:.1f}%")
     print(f"Model saved to checkpoints/words_best.pt")
 
 
